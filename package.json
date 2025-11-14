@@ -11,6 +11,10 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/events": "^3.0.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "events": "^3.3.0"
   }
 }
