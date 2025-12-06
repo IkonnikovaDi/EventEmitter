@@ -1,23 +1,8 @@
 import { EventEmitter } from 'events';
 
-// стр-ра данных для пользователя
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-//событие - тип данных, который оно передает
-//EventMap - события, которые может обрабатывать SafeEventEmitter
-interface EventMap {
-  userCreated: User;
-  userUpdated: { id: number; changes: Partial<User> }; //меняем только нужные поля
-  error: Error;
-}
-
 //обертка над нативным EventEmitter
 // используем готовый EventEmitter внутри (композиция) + скрываем реализацию
-class SafeEventEmitter {
+class SafeEventEmitter<EventMap extends Record<string, any>> {
   private emitter: EventEmitter;
 
   constructor() {
@@ -50,7 +35,7 @@ class SafeEventEmitter {
     listener: (data: EventMap[K]) => void //listener получит данные когда событие произойдет, EventMap[K] берет тип данных для этого конкретного события
   ): this {
     const WrappedListener = this.createWrappedListener(event, listener);
-    this.emitter.on(event, WrappedListener);
+    this.emitter.on(String(event), WrappedListener);
     return this;
   }
 
@@ -60,13 +45,13 @@ class SafeEventEmitter {
     listener: (data: EventMap[K]) => void
   ): this {
     const WrappedListener= this.createWrappedListener(event,listener);
-    this.emitter.once(event, WrappedListener);
+    this.emitter.once(String(event), WrappedListener);
     return this;
   }
 
 //метод для генерации события, после вызова которого все подписанные обработчики получат данные data  
   emit<K extends keyof EventMap>(event: K, data: EventMap[K]): boolean {
-    return this.emitter.emit(event, data);
+    return this.emitter.emit(String(event), data);
   }
 
 }
