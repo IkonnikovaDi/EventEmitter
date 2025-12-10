@@ -14,6 +14,12 @@ eventEmmiter.onceTyped('userUpdated', () => {
   console.log(`onceTyped вызван ${onceCounter} раз`);
 });
 
+eventEmmiter.on('newMessage', (message) => {
+  console.log(`    Новое сообщение от ${message.author.name}:`);
+  console.log(`   "${message.content}"`);
+  console.log(`   Дата: ${message.date.toLocaleTimeString()}`);
+});
+
 // 2. Обработка ошибок
 eventEmmiter.on('error', (error) => {
   console.log(`Ошибка перехвачена: ${error.message}`);
@@ -31,13 +37,20 @@ eventEmmiter.emit('userCreated', {
   email: 'ivan@test.com'
 });
 
-eventEmmiter.emit('userCreated', {
-  id: 2,
+const author = {
+  id: 1,
   name: 'Мария',
   email: 'maria@test.com'
+}
+
+eventEmmiter.emit('newMessage', {
+  id: 1,
+  content: 'Привет',
+  author: author,
+  date: new Date()
 });
 
 console.log('onceTyped работает один раз');
 eventEmmiter.emit('userUpdated', { id: 1, changes: { name: 'Новое имя' } });
-eventEmmiter.emit('userUpdated', { id: 2, changes: { email: 'new@mail.com' } });
+eventEmmiter.emit('userUpdated', { id: 1, changes: { email: 'new@mail.com' } });
 

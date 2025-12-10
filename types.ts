@@ -7,7 +7,7 @@ interface User {
 
 // стр-ра для сообщения
 interface Message {
-    id: string;
+    id: number;
     content: string;
     author: User;
     date: Date;
@@ -16,11 +16,9 @@ interface Message {
 export interface UserEventMap {
   userCreated: User;
   userUpdated: { id: number; changes: Partial<User> }; //меняем только нужные поля
-  error: Error;
 }
 
-export interface MessageEventMap {
+export interface MessageEventMap{
   newMessage: Message;
-  updateMessage: { id: number; changes: Pick<Message, 'content'> }; //меняем только нужные поля
-  error: Error;
+  updateMessage: { id: number; changes: Pick<Message, 'content'> }; //меняем только контент
 }

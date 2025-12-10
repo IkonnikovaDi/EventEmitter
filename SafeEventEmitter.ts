@@ -1,8 +1,13 @@
 import { EventEmitter } from 'events';
 
+type BaseEventMap = {
+  error: Error;
+}
+
+
 //обертка над нативным EventEmitter
 // используем готовый EventEmitter внутри (композиция) + скрываем реализацию
-class SafeEventEmitter<EventMap extends Record<string, any>> {
+class SafeEventEmitter <T extends Record<string, any>, EventMap = T & BaseEventMap> {
   private emitter: EventEmitter;
 
   constructor() {
@@ -19,10 +24,10 @@ class SafeEventEmitter<EventMap extends Record<string, any>> {
         originalListener(data);
       } catch (listenerError) {
         const errorMessage = `Ошибка в обработчике события '${String(event)}': ${listenerError}`;
-        const errorEventData = new Error(errorMessage) as EventMap['error'];
-        
+        const errorEventData = new Error(errorMessage);
+      
         if (event !== 'error') {
-          this.emit('error', errorEventData);
+          (this.emit as any) ('error', new Error(errorMessage));
         }
       }
     };
